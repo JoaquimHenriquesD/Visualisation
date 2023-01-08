@@ -2,13 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>3*2</title>
+    <title>Impact Music</title>
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/dc/4.2.7/style/dc.min.css" rel="stylesheet"/>
     <link crossorigin="" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" rel="stylesheet"/>
     <link href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" rel="stylesheet"/>
     <link href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" rel="stylesheet"/>
     <script src="plotly-2.16.1.min.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js'></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dc/4.2.7/dc.min.js"></script>
@@ -88,7 +89,7 @@
 </head>
 <body>
 
-<button onclick="reset()" style="position: absolute;top: 0;right: 0;margin: 1rem">Reset</button>
+<button onclick="location.href = '/index2.html';" style="position: absolute;top: 0;left: 0;margin: 1rem">Page Suivante</button>
 
 <div class="topContainer">
     <div class="container" id="chart1Anchor">
@@ -171,7 +172,7 @@
             ages.push(pas)
             
         };
-        
+        let listAge=[];
         let listdepression=[];
         for(const element of ages){
             let count=0;
@@ -180,6 +181,10 @@
                 if(element2["Age"]==element){
                     count+=1;
                     depressionmoy+=element2["Depression"];
+                }
+                if(element2["Age"] in listAge == false){
+                    listAge.push(element2["Age"]);
+
                 }
             }
             listdepression.push(depressionmoy/count);
@@ -249,18 +254,25 @@
         listMusicclean = [...set];
 
         let listDepressionmusic=[];
+        let listHourperDaymusic=[];
         for(const element of listMusicclean){
             let count=0;
             let depressmoy=0;
+
+            let hourmoy=0;
+
             for( const element4 of dataset){
                 
                 if(element4["Favgenre"]==element){
                     count+=1
-                    depressmoy+=element4["Depression"]
+                    depressmoy+=element4["Depression"]*10
+                    hourmoy+=element4["Hours per day"]
                     
                 }
+               
             }
                 listDepressionmusic.push(depressmoy/count)
+                listHourperDaymusic.push(hourmoy/count)
         }
         
 
@@ -280,6 +292,45 @@
         Plotly.newPlot('chart4', data4, layout4);
         Plotly.relayout('chart4', update);
         ////////////////////////////////////////////////////////
+        ///////////////////  Hour per Day / Music Style    //////////////////////////
+        
+
+        var trace6 = {
+        x: listMusicclean,
+        y: listHourperDaymusic,
+        type: 'bar',
+        marker: {
+            color: 'rgb(0,255,225)',}
+                };
+
+        var layout6= {
+            title:'Hour per Day / music style'
+        };
+
+        var data6=[trace6];
+        Plotly.newPlot('chart6', data6, layout6);
+        Plotly.relayout('chart6', update);
+        
+
+        ////////////////////////////////////////////////////////
         ///////////////////     //////////////////////////
+
+        var data = [{
+            
+            values: listDepressionmusic,
+            labels: listMusicclean,
+            type: 'pie'
+        }];
+
+        var layout = {
+            height: 300,
+            width: 500,
+            title:'Biggest part of depression compared between music style',
+        };
+
+        Plotly.newPlot('chart5', data, layout);
+            
+
+
     })()
 </script>
